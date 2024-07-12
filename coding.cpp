@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <algorithm>
 
 struct Mahasiswa {
     std::string nama;
@@ -31,14 +32,13 @@ void hapusMahasiswa() {
     std::string NIM;
     std::cout << "Masukkan NIM mahasiswa yang akan dihapus: ";
     std::cin >> NIM;
-    for (auto it = database.begin(); it != database.end(); ++it) {
-        if (it->NIM == NIM) {
-            database.erase(it);
-            std::cout << "Data mahasiswa dengan NIM " << NIM << " telah dihapus.\n";
-            return;
-        }
+    auto it = std::remove_if(database.begin(), database.end(), [&](const Mahasiswa& m) { return m.NIM == NIM; });
+    if (it != database.end()) {
+        database.erase(it, database.end());
+        std::cout << "Data mahasiswa dengan NIM " << NIM << " telah dihapus.\n";
+    } else {
+        std::cout << "Data mahasiswa tidak ditemukan.\n";
     }
-    std::cout << "Data mahasiswa tidak ditemukan.\n";
 }
 
 void perbaruiMahasiswa() {
