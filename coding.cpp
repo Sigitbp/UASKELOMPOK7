@@ -13,7 +13,7 @@ std::vector<Mahasiswa> database;
 
 void tambahMahasiswa() {
     Mahasiswa mhs;
-    std::cout << "Masukkan nama sigit: ";
+    std::cout << "Masukkan nama mahasiswa: ";
     std::cin.ignore();
     std::getline(std::cin, mhs.nama);
     std::cout << "Masukkan NIM: ";
