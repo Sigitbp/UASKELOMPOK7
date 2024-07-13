@@ -1,180 +1,187 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <algorithm>
-#include <conio.h> // Include library for _getch()
+#include <conio.h> // Untuk getch(), hanya bekerja di Windows
 
-#ifdef _WIN32
-    #include <windows.h>
-    void clearScreen() {
-        system("cls");
-    }
-#else
-    #include <unistd.h>
-    void clearScreen() {
-        system("clear");
-    }
-#endif
+using namespace std;
 
+// Struct untuk menyimpan data mahasiswa
 struct Mahasiswa {
-    std::string nama;
-    std::string NIM;
-    std::string jurusan;
-    double nilai;
+    string NIM;
+    string nama;
+    string jurusan;
+    float ipk;
 };
 
-std::vector<Mahasiswa> database;
+// Fungsi untuk membersihkan layar
+void clearScreen() {
+    system("cls");
+}
 
-void tambahMahasiswa() {
+// Fungsi untuk menambahkan data mahasiswa
+void tambahMahasiswa(vector<Mahasiswa>& dataMahasiswa) {
     Mahasiswa mhs;
-    clearScreen(); // Clear the screen
-    std::cout << "Masukkan nama mahasiswa: ";
-    std::cin.ignore();
-    std::getline(std::cin, mhs.nama);
-    std::cout << "Masukkan NIM: ";
-    std::cin >> mhs.NIM;
-    std::cout << "Masukkan jurusan: ";
-    std::cin.ignore();
-    std::getline(std::cin, mhs.jurusan);
-    std::cout << "Masukkan nilai: ";
-    std::cin >> mhs.nilai;
-    database.push_back(mhs);
-    std::cout << "Data mahasiswa telah ditambahkan.\n";
-    std::cout << "Tekan sembarang tombol untuk kembali ke menu...";
-    _getch();
+    clearScreen(); // Membersihkan layar
+    cout << "Masukkan Nama Mahasiswa: ";
+    cin >> mhs.nama;
+    cin.ignore(); // Membersihkan newline character dari buffer input
+    cout << "Masukkan NIM Mahasiswa: ";
+    getline(cin, mhs.NIM);
+    cout << "Masukkan Jurusan Mahasiswa: ";
+    getline(cin, mhs.jurusan);
+    cout << "Masukkan IPK Mahasiswa: ";
+    cin >> mhs.ipk;
+
+    dataMahasiswa.push_back(mhs);
+    cout << "Data mahasiswa berhasil ditambahkan.\n";
 }
 
-void hapusMahasiswa() {
-    clearScreen(); // Clear the screen
-    std::string NIM;
-    std::cout << "Masukkan NIM mahasiswa yang akan dihapus: ";
-    std::cin >> NIM;
-    auto it = std::remove_if(database.begin(), database.end(), [&](const Mahasiswa& m) { return m.NIM == NIM; });
-    if (it != database.end()) {
-        database.erase(it, database.end());
-        std::cout << "Data mahasiswa dengan NIM " << NIM << " telah dihapus.\n";
-    } else {
-        std::cout << "Data mahasiswa tidak ditemukan.\n";
+// Fungsi untuk menampilkan semua data mahasiswa
+void tampilkanMahasiswa(const vector<Mahasiswa>& dataMahasiswa) {
+    clearScreen(); // Membersihkan layar
+    if (dataMahasiswa.empty()) {
+        cout << "Tidak ada data mahasiswa.\n";
+        return;
     }
-    std::cout << "Tekan sembarang tombol untuk kembali ke menu...";
-    _getch();
+
+    for (const auto& mhs : dataMahasiswa) {
+        cout << "Nama: " << mhs.nama << "\n";
+        cout << "NIM: " << mhs.NIM << "\n";
+        cout << "Jurusan: " << mhs.jurusan << "\n";
+        cout << "IPK: " << mhs.ipk << "\n";
+        cout << "--------------------------\n";
+    }
 }
 
-void perbaruiMahasiswa() {
-    clearScreen(); // Clear the screen
-    std::string NIM;
-    std::cout << "Masukkan NIM mahasiswa yang akan diperbarui: ";
-    std::cin >> NIM;
-    for (auto &mhs : database) {
+// Fungsi untuk menghapus data mahasiswa berdasarkan NIM
+void hapusMahasiswa(vector<Mahasiswa>& dataMahasiswa, const string& NIM) {
+    clearScreen(); // Membersihkan layar
+    auto it = dataMahasiswa.begin();
+    while (it != dataMahasiswa.end()) {
+        if (it->NIM == NIM) {
+            it = dataMahasiswa.erase(it);
+            cout << "Data mahasiswa dengan NIM " << NIM << " berhasil dihapus.\n";
+            return;
+        } else {
+            ++it;
+        }
+    }
+    cout << "Data mahasiswa dengan NIM " << NIM << " tidak ditemukan.\n";
+}
+
+// Fungsi untuk memperbarui data mahasiswa berdasarkan NIM
+void perbaruiMahasiswa(vector<Mahasiswa>& dataMahasiswa, const string& NIM) {
+    clearScreen(); // Membersihkan layar
+    for (auto& mhs : dataMahasiswa) {
         if (mhs.NIM == NIM) {
-            std::cout << "Masukkan nama baru: ";
-            std::cin.ignore();
-            std::getline(std::cin, mhs.nama);
-            std::cout << "Masukkan jurusan baru: ";
-            std::getline(std::cin, mhs.jurusan);
-            std::cout << "Masukkan nilai baru: ";
-            std::cin >> mhs.nilai;
-            std::cout << "Data mahasiswa dengan NIM " << NIM << " telah diperbarui.\n";
-            std::cout << "Tekan sembarang tombol untuk kembali ke menu...";
-            _getch();
+            cout << "Masukkan Nama Baru Mahasiswa: ";
+            cin.ignore(); // Membersihkan newline character dari buffer input
+            getline(cin, mhs.nama);
+            cout << "Masukkan Jurusan Baru Mahasiswa: ";
+            getline(cin, mhs.jurusan);
+            cout << "Masukkan IPK Baru Mahasiswa: ";
+            cin >> mhs.ipk;
+            cout << "Data mahasiswa dengan NIM " << NIM << " berhasil diperbarui.\n";
             return;
         }
     }
-    std::cout << "Data mahasiswa tidak ditemukan.\n";
-    std::cout << "Tekan sembarang tombol untuk kembali ke menu...";
-    _getch();
+    cout << "Data mahasiswa dengan NIM " << NIM << " tidak ditemukan.\n";
 }
 
-void tampilkanSemuaMahasiswa() {
-    clearScreen(); // Clear the screen
-    if (database.empty()) {
-        std::cout << "Tidak ada data mahasiswa.\n";
-    } else {
-        for (const auto &mhs : database) {
-            std::cout << "Nama: " << mhs.nama << "\nNIM: " << mhs.NIM << "\nJurusan: " << mhs.jurusan << "\nNilai: " << mhs.nilai << "\n\n";
-        }
-    }
-    std::cout << "Tekan sembarang tombol untuk kembali ke menu...";
-    _getch();
-}
-
-void cariMahasiswa() {
-    clearScreen(); // Clear the screen
+// Fungsi untuk mencari data mahasiswa berdasarkan NIM atau Nama
+void cariMahasiswa(const vector<Mahasiswa>& dataMahasiswa) {
+    clearScreen(); // Membersihkan layar
     int pilihan;
-    std::cout << "Cari berdasarkan:\n1. NIM\n2. Nama\nMasukkan pilihan: ";
-    std::cin >> pilihan;
-    std::cin.ignore();
-    if (pilihan == 1) {
-        std::string NIM;
-        std::cout << "Masukkan NIM: ";
-        std::cin >> NIM;
-        for (const auto &mhs : database) {
+    cout << "Cari berdasarkan:\n1. NIM\n2. Nama\nMasukkan pilihan: ";
+    pilihan = _getch();
+    cout << "\n";
+
+    if (pilihan == '1') {
+        string NIM;
+        cout << "Masukkan NIM: ";
+        cin >> NIM;
+        for (const auto& mhs : dataMahasiswa) {
             if (mhs.NIM == NIM) {
-                std::cout << "Nama: " << mhs.nama << "\nNIM: " << mhs.NIM << "\nJurusan: " << mhs.jurusan << "\nNilai: " << mhs.nilai << "\n";
-                std::cout << "Tekan sembarang tombol untuk kembali ke menu...";
-                _getch();
+                cout << "NIM: " << mhs.NIM << "\n";
+                cout << "Nama: " << mhs.nama << "\n";
+                cout << "Jurusan: " << mhs.jurusan << "\n";
+                cout << "IPK: " << mhs.ipk << "\n";
                 return;
             }
         }
-    } else if (pilihan == 2) {
-        std::string nama;
-        std::cout << "Masukkan nama: ";
-        std::getline(std::cin, nama);
-        for (const auto &mhs : database) {
+    } else if (pilihan == '2') {
+        string nama;
+        cout << "Masukkan Nama: ";
+        cin.ignore(); // Membersihkan newline character dari buffer input
+        getline(cin, nama);
+        for (const auto& mhs : dataMahasiswa) {
             if (mhs.nama == nama) {
-                std::cout << "Nama: " << mhs.nama << "\nNIM: " << mhs.NIM << "\nJurusan: " << mhs.jurusan << "\nNilai: " << mhs.nilai << "\n";
-                std::cout << "Tekan sembarang tombol untuk kembali ke menu...";
-                _getch();
+                cout << "NIM: " << mhs.NIM << "\n";
+                cout << "Nama: " << mhs.nama << "\n";
+                cout << "Jurusan: " << mhs.jurusan << "\n";
+                cout << "IPK: " << mhs.ipk << "\n";
                 return;
             }
         }
     } else {
-        std::cout << "Pilihan tidak valid.\n";
+        cout << "Pilihan tidak valid.\n";
     }
-    std::cout << "Data mahasiswa tidak ditemukan.\n";
-    std::cout << "Tekan sembarang tombol untuk kembali ke menu...";
-    _getch();
+    cout << "Data mahasiswa tidak ditemukan.\n";
 }
 
 int main() {
-    char pilihan;
-    while (true) {
-        clearScreen();
-        std::cout << "Sistem Manajemen Data Mahasiswa\n";
-        std::cout << "1. Tambah Data Mahasiswa\n";
-        std::cout << "2. Hapus Data Mahasiswa\n";
-        std::cout << "3. Perbarui Data Mahasiswa\n";
-        std::cout << "4. Tampilkan Semua Data Mahasiswa\n";
-        std::cout << "5. Cari Data Mahasiswa\n";
-        std::cout << "6. Keluar\n";
-        std::cout << "Masukkan pilihan: ";
-        pilihan = _getch(); // Menangkap input karakter tanpa harus menekan enter
-        std::cout << pilihan << "\n"; // Tampilkan pilihan untuk kenyamanan pengguna
-        
+    vector<Mahasiswa> dataMahasiswa;
+    int pilihan;
+    do {
+        clearScreen(); // Membersihkan layar setiap kali menu ditampilkan
+        cout << "Menu:\n";
+        cout << "1. Tambah Data Mahasiswa\n";
+        cout << "2. Hapus Data Mahasiswa\n";
+        cout << "3. Perbarui Data Mahasiswa\n";
+        cout << "4. Tampilkan Semua Data Mahasiswa\n";
+        cout << "5. Cari Data Mahasiswa\n";
+        cout << "6. Keluar\n";
+        cout << "Pilih menu (1-6): ";
+        pilihan = _getch();
+        cout << "\n";
+
         switch (pilihan) {
             case '1':
-                tambahMahasiswa();
+                tambahMahasiswa(dataMahasiswa);
                 break;
-            case '2':
-                hapusMahasiswa();
+            case '2': {
+                string NIM;
+                cout << "Masukkan NIM Mahasiswa yang akan dihapus: ";
+                cin >> NIM;
+                hapusMahasiswa(dataMahasiswa, NIM);
                 break;
-            case '3':
-                perbaruiMahasiswa();
+            }
+            case '3': {
+                string NIM;
+                clearScreen();
+                cout << "Masukkan NIM Mahasiswa yang akan diperbarui: ";
+                cin >> NIM;
+                perbaruiMahasiswa(dataMahasiswa, NIM);
                 break;
+            }
             case '4':
-                tampilkanSemuaMahasiswa();
+                tampilkanMahasiswa(dataMahasiswa);
                 break;
             case '5':
-                cariMahasiswa();
+                cariMahasiswa(dataMahasiswa);
                 break;
             case '6':
-                std::cout << "Terima kasih telah menggunakan aplikasi ini.\n";
-                return 0;
+                cout << "Keluar dari program.\n";
+                break;
             default:
-                std::cout << "Pilihan tidak valid.\n";
-                std::cout << "Tekan sembarang tombol untuk kembali ke menu...";
-                _getch();
+                cout << "Pilihan tidak valid. Silakan coba lagi.\n";
                 break;
         }
-    }
+
+        cout << "Tekan sembarang tombol untuk kembali ke menu...";
+        _getch();
+
+    } while (pilihan != '6');
+
+    return 0;
 }
